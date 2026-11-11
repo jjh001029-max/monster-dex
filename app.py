@@ -46,6 +46,21 @@ def monster_detail(monster_id):
     # 반복문 밖: 끝까지 찾지 못한 경우
     return jsonify({"error": "없는 몬스터입니다: " + monster_id}), 404
 
+@app.route("/dex")
+def dex():
+    rows = ""
+    for m in load_monsters():
+        cells = "<td>" + m["name"] + "</td><td>" + m["element"] + "</td><td>" + str(m["level"]) + "</td><td>" + m["weakness"] + "</td>"
+        if m["level"] >= 30:
+            cells = cells.replace("<td>", "<td><b>").replace("</td>", "</b></td>")
+        rows += "<tr>" + cells + "</tr>"
+    return (
+        "<html><head><meta charset='utf-8'><title>몬스터 도감</title></head><body>"
+        + "<h1>몬스터 도감 v" + VERSION + "</h1>"
+        + "<table border='1'><tr><th>이름</th><th>속성</th><th>레벨</th><th>약점</th></tr>"
+        + rows + "</table></body></html>"
+    )
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", "5001"))
     app.run(port=port)
